@@ -58,12 +58,18 @@ class BackstagePassUpdater(ItemUpdater):
         else:
             self.item.quality = min(50, self.item.quality + 1)
 
+class ConjuredItemUpdater(ItemUpdater):
+    def update(self):
+        self.item.sell_in -= 1
+        degradation = 4 if self.item.sell_in < 0 else 2
+        self.item.quality = max(0, self.item.quality - degradation)
 
 class UpdaterFactory:
     _registry = {
         AGED_BRIE: AgedBrieUpdater,
         SULFURAS: SulfurasUpdater,
         BACKSTAGE_PASSES: BackstagePassUpdater,
+        "Conjured Mana Cake": ConjuredItemUpdater,
     }
 
     @classmethod
@@ -79,3 +85,4 @@ class GildedRose:
     def update_quality(self):
         for item in self.items:
             UpdaterFactory.for_item(item).update()
+
